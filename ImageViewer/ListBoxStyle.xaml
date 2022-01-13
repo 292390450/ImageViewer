@@ -1,0 +1,192 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style  TargetType="{x:Type ListBoxItem}">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Margin" Value="0,0,0,2" />
+        <Setter Property="MinHeight" Value="25" />
+        <Setter Property="Padding" Value="5 0 0 0" />
+        <Setter Property="RenderOptions.ClearTypeHint" Value="{Binding (RenderOptions.ClearTypeHint), FallbackValue=Auto, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="OnMouseLeftButtonDown1">
+                            <!--<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="Grid">
+                                    <EasingColorKeyFrame KeyTime="0" Value="AntiqueWhite"/>
+                                </ColorAnimationUsingKeyFrames>-->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="Presenter">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0.98"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="Presenter">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0.98"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                        <Storyboard x:Key="OnMouseLeftButtonUp1">
+                            <!--<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="Grid">
+                                    <EasingColorKeyFrame KeyTime="0" Value="#FFFAFAFC"/>
+                                </ColorAnimationUsingKeyFrames>-->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="Presenter">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="Presenter">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+                    <Grid Margin="{TemplateBinding BorderThickness}" x:Name="Grid" Background="#FFFAFAFC">
+
+                        <ContentPresenter x:Name="Presenter" Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" RenderTransformOrigin="0.5,0.5">
+                            <ContentPresenter.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </ContentPresenter.RenderTransform>
+                        </ContentPresenter>
+
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="UIElement.MouseLeftButtonDown" SourceName="Grid">
+                            <BeginStoryboard Storyboard="{StaticResource OnMouseLeftButtonDown1}"/>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="UIElement.MouseLeftButtonUp" SourceName="Grid">
+                            <BeginStoryboard x:Name="OnMouseLeftButtonUp1_BeginStoryboard" Storyboard="{StaticResource OnMouseLeftButtonUp1}"/>
+                        </EventTrigger>
+
+                        <Trigger Property="IsSelected" Value="True">
+
+                            <Setter TargetName="Grid" Property="Background" Value="AntiqueWhite"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Grid" Property="Background" Value="#9FFAEBD7"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsEnabled" Value="False" />
+                                <Condition Property="IsSelected" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Foreground" Value="{DynamicResource AccentSelectedColorBrush}" />
+
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="Selector.IsSelectionActive" Value="True" />
+                            </MultiTrigger.Conditions>
+
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, FallbackValue=Center, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+    </Style>
+    <Style x:Key="TableListBoxItem" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="Background" Value="{DynamicResource WhiteBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="2"></Setter>
+        <Setter Property="Margin" Value="10,5" />
+        <Setter Property="MinHeight" Value="25" />
+        <Setter Property="RenderOptions.ClearTypeHint" Value="{Binding (RenderOptions.ClearTypeHint), FallbackValue=Auto, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="OnMouseLeftButtonDown1">
+                            <!--<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="Grid">
+                                    <EasingColorKeyFrame KeyTime="0" Value="AntiqueWhite"/>
+                                </ColorAnimationUsingKeyFrames>-->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="Presenter">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0.98"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="Presenter">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="0.98"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                        <Storyboard x:Key="OnMouseLeftButtonUp1">
+                            <!--<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="Grid">
+                                    <EasingColorKeyFrame KeyTime="0" Value="#FFFAFAFC"/>
+                                </ColorAnimationUsingKeyFrames>-->
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)" Storyboard.TargetName="Presenter">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)" Storyboard.TargetName="Presenter">
+                                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
+                    <Grid Margin="{TemplateBinding BorderThickness}" x:Name="Grid" Background="#ffffff">
+                        <Border x:Name="Border" BorderThickness="2" BorderBrush="#00ffffff"></Border>
+                        <ContentPresenter x:Name="Presenter" Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" RenderTransformOrigin="0.5,0.5">
+                            <ContentPresenter.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </ContentPresenter.RenderTransform>
+                        </ContentPresenter>
+
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="UIElement.MouseLeftButtonDown" SourceName="Grid">
+                            <BeginStoryboard Storyboard="{StaticResource OnMouseLeftButtonDown1}"/>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="UIElement.MouseLeftButtonUp" SourceName="Grid">
+                            <BeginStoryboard x:Name="OnMouseLeftButtonUp1_BeginStoryboard" Storyboard="{StaticResource OnMouseLeftButtonUp1}"/>
+                        </EventTrigger>
+
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="DodgerBlue"></Setter>
+                            <Setter TargetName="Border" Property="BorderThickness" Value="2"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Grid" Property="Background" Value="#22000000"></Setter>
+                            <Setter TargetName="Border" Property="BorderThickness" Value="2"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsEnabled" Value="False" />
+                                <Condition Property="IsSelected" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Foreground" Value="{DynamicResource AccentSelectedColorBrush}" />
+
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition Property="Selector.IsSelectionActive" Value="True" />
+                            </MultiTrigger.Conditions>
+
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, FallbackValue=Center, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+    </Style>
+</ResourceDictionary>

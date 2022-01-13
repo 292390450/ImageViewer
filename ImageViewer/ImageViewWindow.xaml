@@ -1,0 +1,188 @@
+﻿<Window x:Class="ImageViewer.ImageViewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ImageViewer"
+        xmlns:tnflipview="clr-namespace:TNFlipView;assembly=TNFlipView"
+        mc:Ignorable="d"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"  Icon="image.png"
+        Title="图片查看器" Height="450" Width="800" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ListBoxStyle.xaml"/>
+                <ResourceDictionary Source="ScrollViewerStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid MouseWheel="Image_MouseWheel" Background="White">
+        <Image x:Name="MaxImage" Source="{Binding SelectImage.MaxBitmap}"   
+               MouseLeftButtonDown="MaxImage_MouseLeftButtonDown"  >
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
+        <Border VerticalAlignment="Top"   Margin="20,10,20,0"  CornerRadius="3"
+                    HorizontalAlignment="Center" Height="30"   Background="#bbffffff" >
+            <StackPanel Orientation="Horizontal" >
+                <Button Margin="5">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Viewbox>
+                                <Canvas Width="1024 " Height="1024" Background="#01000000">
+                                    <Path Fill="#000000" Data="M637 443H519V309c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8v134H325c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h118v134c0 4.4 3.6 8 8 8h60c4.4 0 8-3.6 8-8V519h118c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z" ></Path>
+                                    <Path Fill="#000000" Data="M921 867L775 721c122.1-148.9 113.6-369.5-26-509-148-148.1-388.4-148.1-537 0-148.1 148.6-148.1 389 0 537 139.5 139.6 360.1 148.1 509 26l146 146c3.2 2.8 8.3 2.8 11 0l43-43c2.8-2.7 2.8-7.8 0-11zM696 696c-118.8 118.7-311.2 118.7-430 0-118.7-118.8-118.7-311.2 0-430 118.8-118.7 311.2-118.7 430 0 118.7 118.8 118.7 311.2 0 430z" ></Path>
+                                </Canvas>
+                            </Viewbox>
+
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Button Margin="5">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Viewbox >
+                                <Canvas Width="1024 " Height="1024" Background="#01000000">
+                                    <Path Fill="Black" Data="M637 443H325c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h312c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z">
+                                    </Path>
+                                    <Path Fill="Black" Data="M921 867L775 721c122.1-148.9 113.6-369.5-26-509-148-148.1-388.4-148.1-537 0-148.1 148.6-148.1 389 0 537 139.5 139.6 360.1 148.1 509 26l146 146c3.2 2.8 8.3 2.8 11 0l43-43c2.8-2.7 2.8-7.8 0-11zM696 696c-118.8 118.7-311.2 118.7-430 0-118.7-118.8-118.7-311.2 0-430 118.8-118.7 311.2-118.7 430 0 118.7 118.8 118.7 311.2 0 430z" ></Path>
+                                </Canvas>
+                            </Viewbox>
+
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+            </StackPanel>
+        </Border>
+        
+        <tnflipview:HorizontalSmoothScrollViewer x:Name="MiniScroller" VerticalAlignment="Bottom"   Style="{StaticResource Sc}" HorizontalScrollBarVisibility="Visible"
+                                                 Margin="20,0,20,10" HorizontalAlignment="Center" PreviewMouseWheel="HorizontalSmoothScrollViewer_MouseWheel"
+                                                 >
+            <Border  Background="#bbffffff" CornerRadius="3">
+                <StackPanel Orientation="Horizontal">
+                    <ItemsControl x:Name="MiniItemControl"  ItemsSource="{Binding Images}" BorderThickness="0"  
+                         >
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid x:Name="Grid" MinHeight="25" Margin="10,5">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="MouseLeftButtonDown">
+                                            <i:InvokeCommandAction Command="{Binding ElementName=MiniScroller,Path=DataContext.SelectAcion}" CommandParameter="{Binding }"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                    <Border x:Name="Border" BorderThickness="2" BorderBrush="#00ffffff"></Border>
+                                    <Image  Width="50" Height="50" Source="{Binding MiniBitmap}" Margin="2"/>
+                                </Grid>
+                                <DataTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                        <Setter TargetName="Border" Property="BorderBrush" Value="DodgerBlue"></Setter>
+                                        <Setter TargetName="Border" Property="BorderThickness" Value="2"></Setter>
+                                    </DataTrigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Grid" Property="Background" Value="#22000000"></Setter>
+                                        <Setter TargetName="Border" Property="BorderThickness" Value="2"></Setter>
+                                    </Trigger>
+                                </DataTemplate.Triggers>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel Orientation="Horizontal"></VirtualizingStackPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+            
+        </tnflipview:HorizontalSmoothScrollViewer>
+        <Border x:Name="LeftPanel" HorizontalAlignment="Left" Width="50" Background="#00000000" >
+
+            <Button x:Name="LeftButton" VerticalAlignment="Center" Width="32" Visibility="Collapsed" Cursor="Hand" Click="LeftButton_Click">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseEnter" SourceObject="{Binding ElementName=LeftPanel}">
+                        <i:ChangePropertyAction TargetObject="{Binding ElementName=LeftButton}" PropertyName="Visibility" Value="Visible"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="MouseLeave" SourceObject="{Binding ElementName=LeftPanel}">
+                        <i:ChangePropertyAction TargetObject="{Binding ElementName=LeftButton}" PropertyName="Visibility" Value="Collapsed"/>
+                    </i:EventTrigger>
+                    <!--<i:EventTrigger EventName="LostMouseCapture" SourceObject="{Binding ElementName=LeftPanel}">
+                        <i:ChangePropertyAction TargetObject="{Binding ElementName=LeftButton}" PropertyName="Visibility" Value="Collapsed"/>
+                    </i:EventTrigger>-->
+                </i:Interaction.Triggers>
+                <Button.Template>
+                    <ControlTemplate>
+                        <Viewbox Stretch="Uniform" >
+                            <Canvas  Width="1024" Height="1024" Background="#01000000" >
+                                <Canvas.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Canvas.RenderTransform>
+                                <Canvas.Resources/>
+                                <!--Unknown tag: sodipodi:namedview-->
+                                <Path  Fill="#aa000000">
+                                    <Path.Data>
+                                        <PathGeometry Figures="M626.752 690.752L448 512l178.752-178.752-45.248-45.248-224 224 224 224 45.248-45.248z" FillRule="NonZero"/>
+                                    </Path.Data>
+                                </Path>
+                                <Path  Fill="#aa000000">
+                                    <Path.Data>
+                                        <PathGeometry Figures="M512 64a448 448 0 1 1 0 896A448 448 0 0 1 512 64z m0 64a384 384 0 1 0 0 768A384 384 0 0 0 512 128z" FillRule="NonZero"/>
+                                    </Path.Data>
+                                </Path>
+                            </Canvas>
+                        </Viewbox>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Border>
+        <Border x:Name="RightPanel" HorizontalAlignment="Right" Width="50" Background="#00000000">
+            <Button  x:Name="RightButton" VerticalAlignment="Center" Width="32" Visibility="Collapsed" Cursor="Hand" Click="RightButton_Click">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseEnter" SourceObject="{Binding ElementName=RightPanel}">
+                        <i:ChangePropertyAction TargetObject="{Binding ElementName=RightButton}" PropertyName="Visibility" Value="Visible"/>
+                    </i:EventTrigger>
+                    <i:EventTrigger EventName="MouseLeave" SourceObject="{Binding ElementName=RightPanel}">
+                        <i:ChangePropertyAction TargetObject="{Binding ElementName=RightButton}" PropertyName="Visibility" Value="Collapsed"/>
+                    </i:EventTrigger>
+                    <!--<i:EventTrigger EventName="LostMouseCapture" SourceObject="{Binding ElementName=RightPanel}">
+                        <i:ChangePropertyAction TargetObject="{Binding ElementName=RightButton}" PropertyName="Visibility" Value="Collapsed"/>
+                    </i:EventTrigger>-->
+                </i:Interaction.Triggers>
+                <Button.Template>
+                    <ControlTemplate>
+                        <Viewbox  Stretch="Uniform">
+                            <Canvas  Width="1024" Height="1024" Background="#01000000" >
+                                <Canvas.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Canvas.RenderTransform>
+                                <Canvas.Resources/>
+                                <!--Unknown tag: sodipodi:namedview-->
+                                <Path  Fill="#aa000000">
+                                    <Path.Data>
+                                        <PathGeometry Figures="M397.248 333.248L576 512l-178.752 178.752 45.248 45.248 224-224-224-224-45.248 45.248z" FillRule="NonZero"/>
+                                    </Path.Data>
+                                </Path>
+                                <Path  Fill="#aa000000">
+                                    <Path.Data>
+                                        <PathGeometry Figures="M512 960A448 448 0 1 1 512 64a448 448 0 0 1 0 896z m0-64A384 384 0 1 0 512 128a384 384 0 0 0 0 768z" FillRule="NonZero"/>
+                                    </Path.Data>
+                                </Path>
+                            </Canvas>
+                        </Viewbox>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Border>
+        <!--提示视图-->
+        <Border x:Name="TipView" Grid.ColumnSpan="4" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20,0,20,0" CornerRadius="5" Background="#aa000000"
+                Visibility="Collapsed" >
+            <TextBlock x:Name="TipContent" Text="sad " Foreground="#aaffffff" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="300" 
+                       TextWrapping="Wrap"
+                       Margin="10,8"></TextBlock>
+        </Border>
+    </Grid>
+</Window>

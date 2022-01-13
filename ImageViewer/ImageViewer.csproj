@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;net4.5</TargetFrameworks>
+      <!--<TargetFramework>netcoreapp3.1</TargetFramework>-->
+    <UseWPF>true</UseWPF>
+    <Authors>zeng</Authors>
+    <PackageId>$(AssemblyName)ZDL</PackageId>
+    <Description>WPF查看图片的一个窗口，支持多种数据源</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="TNFlipView" Version="1.0.3" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="image.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="image.png" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32104.313
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageViewer", "ImageViewer.csproj", "{38948597-BDD7-41EA-94A6-085F69800F9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageViewerTest", "..\ImageViewerTest\ImageViewerTest.csproj", "{42443A70-DCDB-42D6-AE50-23E572DF937B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{38948597-BDD7-41EA-94A6-085F69800F9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38948597-BDD7-41EA-94A6-085F69800F9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38948597-BDD7-41EA-94A6-085F69800F9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38948597-BDD7-41EA-94A6-085F69800F9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42443A70-DCDB-42D6-AE50-23E572DF937B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42443A70-DCDB-42D6-AE50-23E572DF937B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42443A70-DCDB-42D6-AE50-23E572DF937B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42443A70-DCDB-42D6-AE50-23E572DF937B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F72A2932-062F-4052-AD35-935D287B0232}
+	EndGlobalSection
+EndGlobal
