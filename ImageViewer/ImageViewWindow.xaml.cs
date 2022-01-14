@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.Xaml.Behaviors.Core;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,40 +24,24 @@ namespace ImageViewer
     /// </summary>
     public partial class ImageViewWindow : Window, INotifyPropertyChanged
     {
+        private bool _isImageLoading;
+        private ObservableCollection<ImageWrap> _currentImages;
+        private ImageWrap _oldSelect;
         private bool _isNoPraraContrs;
         private readonly double SingleScaleRatio = 0.5;
-        ImageViewWindowViewModel _dataContext;
+      
         private Guid tipGuid = Guid.Empty;
-        private ImageWrap _selectImage;
-        public ImageWrap SelectImage
-        {
-            get { return _selectImage; }
-            set
-            {
-                _selectImage = value;
-                //大图没有加载去加载
-                LoadMaxImage(value);
-                OnPropertyChanged();
-            }
-        }
-        private ObservableCollection<ImageWrap> _images;
-        public ObservableCollection<ImageWrap> Images
-        {
-            get { return _images; }
-            set
-            {
-                _images = value;
-                OnPropertyChanged();
-            }
-        }
-
+     
+    
 
         public ImageViewWindow()
         {
             InitializeComponent();
+            
             _isNoPraraContrs = true;
-            _dataContext = new ImageViewWindowViewModel(MaxImage);
-            this.DataContext = _dataContext;
+            //_dataContext = new ImageViewWindowViewModel(MaxImage);
+            //this.DataContext = _dataContext;
+            this.DataContext = this;
         }
    
         /// <summary>
@@ -71,20 +57,142 @@ namespace ImageViewer
             {
                 throw new Exception("无参构造创建此类才能调用此方法");
             }
-            _dataContext.SetSource(sources, pathFactory, defaultIndex);
+            GnneratImageList(sources, pathFactory, defaultIndex);
+         //   _dataContext.SetSource(sources, pathFactory, defaultIndex);
+        }
+        private async void GnneratImageList<T>(IEnumerable<T> sources, Func<T, string> pathFactory, int defaultIndex = 0)
+        {
+            await Task.Delay(100);
+            _currentImages = new ObservableCollection<ImageWrap>();
+            MiniItemControl.ItemsSource= _currentImages;
+            foreach (var source in sources)
+            {
+                var res = await Task.Run(() =>
+                {
+                    try
+                    {
+                        var path = pathFactory?.Invoke(source);
+                        if (!string.IsNullOrEmpty(path))
+                        {
+                            var img = new ImageWrap() { Path = path };
+                            BitmapImage bitmapImage = new BitmapImage();
+                            bitmapImage.BeginInit();
+                            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                            bitmapImage.CreateOptions = BitmapCreateOptions.DelayCreation;
+                            bitmapImage.DecodePixelWidth = 50;
+                            bitmapImage.UriSource = new Uri(path);
+                            bitmapImage.EndInit();
+                            bitmapImage.Freeze();
+                            img.MiniBitmap = bitmapImage;
+                            return img;
+                        }
+                        return null;
+
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                });
+                if (res != null)
+                {
+                    _currentImages.Add(res);
+                }
+            }
+            if (_currentImages.Any())
+            {
+                if (defaultIndex >= _currentImages.Count)
+                {
+                    defaultIndex = _currentImages.Count - 1;
+                }
+                if (defaultIndex < 0)
+                {
+                    defaultIndex = 0;
+                }
+                SelectItem(_currentImages[defaultIndex]);
+            }
+        }
+        public ActionCommand _selectAcion;
+        public ActionCommand SelectAcion => _selectAcion ?? (_selectAcion = new ActionCommand((ob) =>
+        {
+            SelectItem(ob as ImageWrap);
+        }));
+        public void SelectItem(ImageWrap imageWrap)
+        {
+            if (_isImageLoading)
+            {
+                return;
+            }
+           
+            if (_oldSelect != null)
+            {
+                _oldSelect.IsSelected = false;
+                _oldSelect.MaxBitmap = null;
+            }
+            if (MaxImage != null)
+            {
+                var group = MaxImage.RenderTransform as TransformGroup;
+                if (group != null)
+                {
+                    var ts = group.Children[0] as ScaleTransform;
+                    var tt = group.Children[1] as TranslateTransform;
+                    ts.ScaleX = 1;
+                    ts.ScaleY = 1;
+                    //还原偏移
+                    tt.X = 0;
+                    tt.Y = 0;
+                }
+            }
+            imageWrap.IsSelected = true;
+            //加载大图
+            _oldSelect=imageWrap;
+            LoadMaxImage(imageWrap);
+        }
+        private async void LoadMaxImage(ImageWrap value)
+        {
+            if (value != null && value.MaxBitmap == null)
+            {
+                _isImageLoading = true;
+                var res = await Task.Run(() =>
+                {
+                    try
+                    {
+
+                        BitmapImage bitmapImage = new BitmapImage();
+                        bitmapImage.BeginInit();
+                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bitmapImage.CreateOptions = BitmapCreateOptions.DelayCreation;
+                        // bitmapImage.DecodePixelWidth = 50;
+                        bitmapImage.UriSource = new Uri(value.Path);
+                        bitmapImage.EndInit();
+                        bitmapImage.Freeze();
+
+                        return bitmapImage;
+
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                });
+                _isImageLoading = false;
+                value.MaxBitmap = res;
+            }
+            MaxImage.Source = value.MaxBitmap;
         }
         public ImageViewWindow(string[] images, int defaultIndex = 0)
         {
             InitializeComponent();
-            _dataContext = new ImageViewWindowViewModel(images, MaxImage, defaultIndex);
-            this.DataContext = _dataContext;
+         //   _dataContext = new ImageViewWindowViewModel(images, MaxImage, defaultIndex);
+            this.DataContext = this;
+            GnneratImageList(images, (path) => path, defaultIndex);
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            if (_dataContext?.Images != null)
+            if (_currentImages != null)
             {
-                foreach (var image in _dataContext.Images)
+                foreach (var image in _currentImages)
                 {
                     image.MiniBitmap = null;
                     image.MaxBitmap = null;
@@ -267,6 +375,8 @@ namespace ImageViewer
       
 
         private bool _isCtrlCap;
+      
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.LeftCtrl)
@@ -294,11 +404,11 @@ namespace ImageViewer
 
         private void LeftButton_Click(object sender, RoutedEventArgs e)
         {
-            var index = _dataContext.Images.IndexOf(_dataContext.SelectImage);
+            var index = _currentImages.IndexOf(_oldSelect);
 
             if (index >= 1)
             {
-                _dataContext.SelectAcion.Execute(_dataContext.Images[index - 1]);
+                SelectItem(_currentImages[index - 1]);
                 index--;
             }
             var contar = MiniItemControl.ItemContainerGenerator.ContainerFromIndex(0) as ContentPresenter;
@@ -307,10 +417,10 @@ namespace ImageViewer
 
         private void RightButton_Click(object sender, RoutedEventArgs e)
         {
-            var index = _dataContext.Images.IndexOf(_dataContext.SelectImage);
-            if (index <= _dataContext.Images.Count - 2)
+            var index = _currentImages.IndexOf(_oldSelect);
+            if (index <= _currentImages.Count - 2)
             {
-                _dataContext.SelectAcion.Execute(_dataContext.Images[index + 1]);
+                SelectItem(_currentImages[index+ 1]);
                 index++;
             }
             var contar = MiniItemControl.ItemContainerGenerator.ContainerFromIndex(0) as ContentPresenter;

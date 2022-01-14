@@ -17,7 +17,7 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid MouseWheel="Image_MouseWheel" Background="White">
-        <Image x:Name="MaxImage" Source="{Binding SelectImage.MaxBitmap}"   
+        <Image x:Name="MaxImage" 
                MouseLeftButtonDown="MaxImage_MouseLeftButtonDown"  >
             <Image.RenderTransform>
                 <TransformGroup>
@@ -65,14 +65,15 @@
                                                  >
             <Border  Background="#bbffffff" CornerRadius="3">
                 <StackPanel Orientation="Horizontal">
-                    <ItemsControl x:Name="MiniItemControl"  ItemsSource="{Binding Images}" BorderThickness="0"  
+                    <ItemsControl x:Name="MiniItemControl"   BorderThickness="0"  
                          >
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid x:Name="Grid" MinHeight="25" Margin="10,5">
                                     <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="MouseLeftButtonDown">
+                                        <i:EventTrigger EventName="MouseLeftButtonDown" >
                                             <i:InvokeCommandAction Command="{Binding ElementName=MiniScroller,Path=DataContext.SelectAcion}" CommandParameter="{Binding }"/>
+                                          
                                         </i:EventTrigger>
                                     </i:Interaction.Triggers>
                                     <Border x:Name="Border" BorderThickness="2" BorderBrush="#00ffffff"></Border>
