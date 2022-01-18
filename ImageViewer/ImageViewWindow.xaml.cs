@@ -29,7 +29,7 @@ namespace ImageViewer
         private ImageWrap _oldSelect;
         private bool _isNoPraraContrs;
         private readonly double SingleScaleRatio = 0.5;
-      
+        private double _screenDpi;
         private Guid tipGuid = Guid.Empty;
      
     
@@ -63,6 +63,7 @@ namespace ImageViewer
         private async void GnneratImageList<T>(IEnumerable<T> sources, Func<T, string> pathFactory, int defaultIndex = 0)
         {
             await Task.Delay(100);
+            _screenDpi = 96 * PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice.M11;
             _currentImages = new ObservableCollection<ImageWrap>();
             MiniItemControl.ItemsSource= _currentImages;
             foreach (var source in sources)
@@ -70,14 +71,14 @@ namespace ImageViewer
                 var res = await Task.Run(() =>
                 {
                     try
-                    {
+                    { 
                         var path = pathFactory?.Invoke(source);
                         if (!string.IsNullOrEmpty(path))
                         {
                             var img = new ImageWrap() { Path = path };
                             BitmapImage bitmapImage = new BitmapImage();
                             bitmapImage.BeginInit();
-                            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                          //  bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                             bitmapImage.CreateOptions = BitmapCreateOptions.DelayCreation;
                             bitmapImage.DecodePixelWidth = 50;
                             bitmapImage.UriSource = new Uri(path);
@@ -148,35 +149,59 @@ namespace ImageViewer
             _oldSelect=imageWrap;
             LoadMaxImage(imageWrap);
         }
+
+        Rect _orginRec, _showRec;
+        private double _scaleRatio;
         private async void LoadMaxImage(ImageWrap value)
         {
             if (value != null && value.MaxBitmap == null)
             {
                 _isImageLoading = true;
-                var res = await Task.Run(() =>
+                try
                 {
-                    try
+                    //需要先获取图像的基本信息再进行创建渲染
+                    BitmapImage infoImage = new BitmapImage(new Uri(value.Path));
+                    //存下当前加载图像的实际宽高，计算当前展示image的宽高，进行缩放
+                    _orginRec = new Rect(0, 0, infoImage.PixelWidth, infoImage.PixelHeight);
+                    infoImage = null;
+                    BitmapImage bitmapImage = new BitmapImage();
+                    bitmapImage.BeginInit();
+                    //加载宽高
+                    var widthRatio = BaseGrid.ActualWidth / _orginRec.Width;
+                    var heightRatio =  BaseGrid.ActualHeight / _orginRec.Height;
+                   
+                    if (widthRatio < heightRatio)  //以宽为边界
                     {
-
-                        BitmapImage bitmapImage = new BitmapImage();
-                        bitmapImage.BeginInit();
-                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                        bitmapImage.CreateOptions = BitmapCreateOptions.DelayCreation;
-                        // bitmapImage.DecodePixelWidth = 50;
-                        bitmapImage.UriSource = new Uri(value.Path);
-                        bitmapImage.EndInit();
-                        bitmapImage.Freeze();
-
-                        return bitmapImage;
-
+                        _showRec = Rect.Transform(_orginRec, new Matrix(widthRatio, 0, 0, widthRatio, 0, 0));
+                        bitmapImage.DecodePixelWidth = (int)_showRec.Width;
+                        _scaleRatio = widthRatio;
                     }
-                    catch
+                    else
                     {
-                        return null;
+                        _showRec = Rect.Transform(_orginRec, new Matrix(heightRatio, 0, 0, heightRatio, 0, 0));
+                        bitmapImage.DecodePixelHeight = (int)_showRec.Height;
+                        _scaleRatio = heightRatio;
                     }
-                });
-                _isImageLoading = false;
-                value.MaxBitmap = res;
+                    //   bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    //bitmapImage.CreateOptions = BitmapCreateOptions.DelayCreation;
+
+                  
+                    bitmapImage.UriSource = new Uri(value.Path);
+                    bitmapImage.EndInit();
+                   //  bitmapImage.Freeze();
+                
+                    value.MaxBitmap = bitmapImage;
+                }
+                catch
+                {
+
+                }
+                finally
+                {
+                    _isImageLoading = false;
+                }
+
+          
             }
             MaxImage.Source = value.MaxBitmap;
         }
@@ -213,7 +238,27 @@ namespace ImageViewer
             }
 
         }
+        private void ImageZoom(object sender, MouseWheelEventArgs e)
+        {
+            var position = Mouse.GetPosition(e.Device.Target);
+           
+            if (e.Delta > 0)
+            {
+                //将当前比例放大
+                var moreX =(int) (position.X /_scaleRatio*1.2);
+                var moreY = (int)(position.Y /_scaleRatio*1.2);
+                
+                var bit=   MaxImage.Source as BitmapImage;
+                if (bit.SourceRect == null || bit.SourceRect.IsEmpty)
+                {
+                    
+                }
+            }
+            else
+            {
 
+            }
+        }
         private void Image_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             //if (!_isCtrlCap)
@@ -426,7 +471,15 @@ namespace ImageViewer
             var contar = MiniItemControl.ItemContainerGenerator.ContainerFromIndex(0) as ContentPresenter;
             MiniScroller.AnimateScroll(index * contar.ActualWidth);
         }
-
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var bit = MaxImage.Source as BitmapImage;
+            
+            bit.SourceRect = new Int32Rect(0, 0, 50, 50);
+            
+            //bit.DecodePixelWidth = 8000;
+     
+        }
         #region tip显示
         public void Show(string content, int IsType = 0)
         {
@@ -474,6 +527,9 @@ namespace ImageViewer
 
         #region notify
         public event PropertyChangedEventHandler PropertyChanged;
+
+   
+
         private void OnPropertyChanged([CallerMemberName] string name = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

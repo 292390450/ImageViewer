@@ -5,6 +5,7 @@
       <!--<TargetFramework>netcoreapp3.1</TargetFramework>-->
     <UseWPF>true</UseWPF>
     <Authors>zeng</Authors>
+    <Version>1.0.1</Version>
     <PackageId>$(AssemblyName)ZDL</PackageId>
     <Description>WPF查看图片的一个窗口，支持多种数据源</Description>
   </PropertyGroup>

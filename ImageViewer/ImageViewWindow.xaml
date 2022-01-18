@@ -16,7 +16,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid MouseWheel="Image_MouseWheel" Background="White">
+    <Grid x:Name="BaseGrid" MouseWheel="Image_MouseWheel" Background="White">
         <Image x:Name="MaxImage" 
                MouseLeftButtonDown="MaxImage_MouseLeftButtonDown"  >
             <Image.RenderTransform>
@@ -29,7 +29,7 @@
         <Border VerticalAlignment="Top"   Margin="20,10,20,0"  CornerRadius="3"
                     HorizontalAlignment="Center" Height="30"   Background="#bbffffff" >
             <StackPanel Orientation="Horizontal" >
-                <Button Margin="5">
+                <Button Margin="5" Click="Button_Click">
                     <Button.Template>
                         <ControlTemplate>
                             <Viewbox>

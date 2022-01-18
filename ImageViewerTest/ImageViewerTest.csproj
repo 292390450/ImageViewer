@@ -2,10 +2,16 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
+    <TargetFrameworks>netcoreapp3.1;net6.0-windows</TargetFrameworks>
+    <!--<TargetFramework>net6.0-windows</TargetFramework>-->
+    <!--<Nullable>enable</Nullable>-->
     <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ImageViewer\ImageViewer.csproj" />
